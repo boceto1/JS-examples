@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    :root {
+      --xPos: 30px;
+      --yPos: 30px;
+    }
+
+    html,
+    body {
+      margin: 0;
+      /* cursor: none; */
+    }
+
+    .player {
+      position: absolute;
+      transform: translate(var(--xPos),var(--yPos));
+      z-index: 1;
+    }
+    .player > img {
+      width: 60px;
+    }
+
+    section {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: papayawhip;
+    }
+
+    .subs {
+      width: 40px;
+      position: absolute;
+    }
+
+    .dashboard {
+      position: absolute;
+      z-index: 9999;
+      right: 0px;
+      background-color: gainsboro;
+      width: 300px;
+      text-align: center;
+      border-end-start-radius: 20px;
+      border: 1px solid black;
+    }
+    .result {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      display: none;
+      z-index: 99999;
+    }
+    .result > img {
+      width: 100%;
+      width: 600px;
+    }
+
+    .result > p {
+      background-color: black;
+      width: 600px;
+      height: 50px;
+      margin: 0;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .win {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <div class="player">
+      <img src="./images/player.png" alt="player">
+      <div class="score">Jhosue</div>
+    </div>
+    <div class="dashboard">
+      <p id="total">Total: 0</p>
+      <p id="time">Time: 30</p>
+    </div>
+    <div class="result">
+      <img src="./images/win.jpeg" alt="player-win">
+      <p>TOTAL: </p>
+    </div>
+    <script>
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      let total = 0;
+      let time = 30;
+      const subList = [];
+
+      const movePlayer = (e) => {
+        const [xPos, yPos] = [e.clientX, e.clientY];
+        document.documentElement.style.setProperty('--xPos', `${xPos }px`);
+        document.documentElement.style.setProperty('--yPos', `${yPos }px`);
+      }
+      const gameField = document.querySelector('section');
+      gameField.addEventListener('mousemove', movePlayer);
+
+      const getRandomInt = (min, max) => {
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+      const getRandomWidth = () => getRandomInt(0, screenWidth);
+      const getRandomHeight = () => getRandomInt(0, screenHeight);
+
+      const updateScoreLabel = () => {
+        const pop = new Audio('./audio/pop.mp3');
+        pop.play();
+        total++;
+        const totalLabel = document.querySelector('.dashboard>p');
+        totalLabel.innerText = `Total: ${total}`
+      }
+
+      const deleteSub = (subElement) => {
+        const section = document.querySelector('section');
+        section.removeChild(subElement);
+      }
+      
+      const addSub = () => {
+        const section = document.querySelector('section');
+        const sub = document.createElement('img');
+        sub.src = "./images/subs.png";
+        sub.classList.add('subs');
+        sub.style.transform = `translate(${getRandomWidth()}px,${getRandomHeight()}px)`;
+
+        sub.addEventListener('mouseover', (e) => {
+          deleteSub(e.srcElement);
+          updateScoreLabel();
+        });
+        sub.addEventListener('mouseenter', (e) => {
+          deleteSub(e.srcElement);
+          updateScoreLabel();
+        });
+
+        section.appendChild(sub);
+        subList.push(sub);
+      }
+
+      const addSubInterval = setInterval(() => {
+        addSub();
+      }, [500]);
+
+      const deleteSubInterval = setInterval(() => {
+        const sub = subList.shift();
+        deleteSub(sub);
+      }, [1000]);
+
+      const endGame = () => {
+        const totalEndGame = document.querySelector('.result');
+        const totalEndGameText = totalEndGame.querySelector('p');
+        totalEndGameText.innerText = `TOTAL: ${total}`;
+
+        totalEndGame.classList.add('win');
+      }
+
+      const timeInterval = setInterval(() => {
+        time--;
+        const TimeText = document.querySelector('#time');
+        TimeText.innerText = `Time: ${time}`;
+      }, 1000);
+
+      setTimeout(() => {
+        clearInterval(addSubInterval);
+        clearInterval(deleteSubInterval);
+        clearInterval(timeInterval);
+        endGame();
+      }, 1000 * 30);
+
+
+
+    </script>
+  </section>
+</body>
+</html>

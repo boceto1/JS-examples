@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+
+    :root {
+      --position: 0deg;
+    }
+
+    body {
+      text-align: center;
+    }
+
+    .container {
+      width: 80vw;
+      margin: 40px auto 10px;
+      padding: 10px 20px;
+      border: 1px solid red;
+    }
+
+    .ruleta {
+      border: 4px dotted brown;
+      border-radius: 50%;
+      width: 500px;
+      height: 500px;
+      margin: 10px auto;
+      position: relative;
+    }
+
+    .center {
+      border-radius: 50%;
+      background-color: darkorange;
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      top: 47.5%;
+      right: 47%;
+      z-index: 2;
+    }
+
+    .arrow {
+      position: absolute;
+      background-color: green;
+      width: 250px;
+      height: 5px;
+      top: 50%;
+      transform-origin: 100%;
+      transform: rotate(var(--position));
+      transition: all 1s linear;
+    }
+    .actions {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the "Ruleta"</h1>
+  <div class="controls">
+    <label for="position">Position: <span id="position-value">0</span></label>
+    <input id="position" type="range" name="position" min="0" max="360" value="0" data-sizing="deg">
+    <label for="speed">Speed: <span id="speed-value">10</span></label>
+    <input id="speed" type="range" name="speed" min="10" max="200" value="10" data-sizing="px">
+    <div class="actions">
+      <button onclick="onStartRulete()">Start</button>
+      <button onclick="onPauseRulete()">Stop</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="ruleta">
+      <div class="center"></div>
+      <div class="arrow"></div>
+    </div>
+  </div>
+
+  <script>
+    let rotateIntervalId;
+    let time=0;
+
+    const inputs = document.querySelectorAll('.controls input');
+
+    function handleUpdate() {
+      const suffix = this.dataset.sizing || '';
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+      
+      const label = document.getElementById(`${this.name}-value`);
+      label.textContent = this.value;
+    }
+
+    function rotateRulete () {
+      const speed = parseInt(document.getElementById(`speed-value`).textContent);
+      const  position = parseInt(document.getElementById(`position-value`).textContent);
+      const nextPosition = position + speed * time;
+      console.log(nextPosition);
+      document.documentElement.style.setProperty(`--position`, nextPosition + 'deg');
+      time++;
+    }
+    
+    inputs.forEach(input => input.addEventListener('change', handleUpdate));
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+
+    function onStartRulete() {
+      rotateIntervalId = setInterval(rotateRulete, 1000);
+    }
+
+    function onPauseRulete() {
+      clearInterval(rotateIntervalId);
+      time=0;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- <div class="bg"></div> -->
+  <div class="container">
+    <h1>Super Jean's Coro</h1>
+    <div class="chorus">
+      <div id="soprano" value="soprano" class="singer soprano">
+        <img src="images/soprano.png" alt="soprano">
+        <p>SOPRANO</p>
+      </div>
+      <div id="contraalto" value="contraalto" class="singer contraalto">
+        <img src="images/contraalto.png" alt="contraalto">
+        <p>CONTRAALTO</p>
+      </div>
+      <div id="tenor" value="tenor" class="singer tenor">
+        <img src="images/tenor.png" alt="tenor">
+        <p>TENOR</p>
+      </div>
+      <div id="bajo" value="bajo" class="singer bajo">
+        <img src="images/bajo.png" alt="bajo">
+        <p>BAJO</p>
+      </div>
+    </div>
+    <button onclick="stopChorus()">STOP</button>
+  </div>
+  <audio data-key="soprano" src="sounds/soprano.mp3"></audio>
+  <audio data-key="contraalto" src="sounds/alto.mp3"></audio>
+  <audio data-key="tenor" src="sounds/tenor.mp3"></audio>
+  <audio data-key="bajo" src="sounds/bajo.mp3"></audio>
+
+  <script>
+    let currentTime = 0;
+
+    function startSinging (singer) {
+      const singerComponent = document.getElementById(singer);
+      singerComponent.classList.add('singing');
+      
+      const audio = document.querySelector(`audio[data-key="${singer}"]`);
+      if (!audio) return;
+      if (!audio.paused) return;
+
+      if (currentTime === 0) {
+        audio.currentTime = currentTime
+      } else {
+        audio.currentTime = currentTime;
+      }
+      audio.play()
+
+    }
+
+    function stopSinging (singer) {
+      const singerComponent = document.getElementById(singer);
+      singerComponent.classList.remove('singing');
+      const audio = document.querySelector(`audio[data-key="${singer}"]`);
+
+      if (!audio) return;
+      if (audio.paused) return;
+      audio.pause();
+    }
+
+    function startSinger(e) {
+      const singer = e.currentTarget.attributes.value.nodeValue;
+      const isSiging = e.currentTarget.attributes.class.nodeValue
+                        .split(' ')
+                        .includes('singing');
+                      
+      if (isSiging) {
+        stopSinging(singer);
+      } else {
+        startSinging(singer);
+      }
+    }
+
+    function stopChorus() {
+      const singerAudios = document.querySelectorAll('audio');
+      singerAudios.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+      currentTime = 0;
+      const singers = document.querySelectorAll('.singer');
+      singers.forEach(singer => singer.classList.remove('singing'));
+    }
+
+    function transformSecondsToTimerForman(time) {
+      return `${Math.trunc(time/60)}:${Math.trunc(time)}`;
+    }
+
+    const singers = document.querySelectorAll('.singer');
+    singers.forEach(singer => singer.addEventListener('mouseenter', startSinger));
+
+    const audios = document.querySelectorAll('audio');
+    audios.forEach(audio => audio.addEventListener('timeupdate', (event) => {
+      if (audio.currentTime > currentTime) {
+        currentTime = audio.currentTime;
+      }
+    }))
+    
+  </script>
+</body>
+</html>
