@@ -8,8 +8,8 @@
 
   <style>
     :root {
-      --xPos: 30px;
-      --yPos: 30px;
+      --xPos: -100px;
+      --yPos: -100px;
     }
 
     html,
@@ -49,7 +49,7 @@
       border-end-start-radius: 20px;
       border: 1px solid black;
     }
-    .result {
+    .modal {
       position: absolute;
       width: 100vw;
       height: 100vh;
@@ -57,15 +57,14 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      display: none;
       z-index: 99999;
     }
-    .result > img {
+    .modal > img {
       width: 100%;
       width: 600px;
     }
 
-    .result > p {
+    .modal > p, button {
       background-color: black;
       width: 600px;
       height: 50px;
@@ -77,7 +76,15 @@
     }
 
     .win {
+      display: none;
+    }
+
+    .win-active {
       display: flex;
+    }
+
+    .start-hide {
+      display: none;
     }
   </style>
 </head>
@@ -91,9 +98,13 @@
       <p id="total">Total: 0</p>
       <p id="time">Time: 30</p>
     </div>
-    <div class="result">
+    <div class="modal win">
       <img src="./images/win.jpeg" alt="player-win">
       <p>TOTAL: </p>
+    </div>
+    <div class="modal start">
+      <img src="./images/win.jpeg" alt="player-win">
+      <button onclick="startGame()">Start Game</button>
     </div>
     <script>
       const screenWidth = window.innerWidth;
@@ -108,8 +119,12 @@
         document.documentElement.style.setProperty('--xPos', `${xPos }px`);
         document.documentElement.style.setProperty('--yPos', `${yPos }px`);
       }
-      const gameField = document.querySelector('section');
-      gameField.addEventListener('mousemove', movePlayer);
+
+      const setPlayer = () => {
+         const gameField = document.querySelector('section');
+        gameField.addEventListener('mousemove', movePlayer);
+      }
+     
 
       const getRandomInt = (min, max) => {
         return Math.floor(Math.random() * (max - min)) + min;
@@ -151,37 +166,36 @@
         subList.push(sub);
       }
 
-      const addSubInterval = setInterval(() => {
-        addSub();
-      }, [500]);
-
-      const deleteSubInterval = setInterval(() => {
-        const sub = subList.shift();
-        deleteSub(sub);
-      }, [1000]);
-
       const endGame = () => {
-        const totalEndGame = document.querySelector('.result');
+        const totalEndGame = document.querySelector('.win');
         const totalEndGameText = totalEndGame.querySelector('p');
         totalEndGameText.innerText = `TOTAL: ${total}`;
-
-        totalEndGame.classList.add('win');
+        totalEndGame.classList.add('win-active');
       }
 
-      const timeInterval = setInterval(() => {
-        time--;
-        const TimeText = document.querySelector('#time');
-        TimeText.innerText = `Time: ${time}`;
-      }, 1000);
-
-      setTimeout(() => {
-        clearInterval(addSubInterval);
-        clearInterval(deleteSubInterval);
-        clearInterval(timeInterval);
-        endGame();
-      }, 1000 * 30);
-
-
+      const startGame = () => {
+        const startModal = document.querySelector('.start');
+        startModal.classList.add('start-hide');
+        setPlayer();
+        const addSubInterval = setInterval(() => {
+          addSub();
+         }, [500]);
+        const deleteSubInterval = setInterval(() => {
+          const sub = subList.shift();
+          deleteSub(sub);
+        }, [1000]);
+        const timeInterval = setInterval(() => {
+          time--;
+          const TimeText = document.querySelector('#time');
+          TimeText.innerText = `Time: ${time}`;
+        }, 1000);
+        setTimeout(() => {
+          clearInterval(addSubInterval);
+          clearInterval(deleteSubInterval);
+          clearInterval(timeInterval);
+          endGame();
+        }, 1000 * 30);
+      }
 
     </script>
   </section>
